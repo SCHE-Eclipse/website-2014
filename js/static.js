@@ -12,7 +12,7 @@ function initStaticBodies() {
 // Create the surfaces on which the robot will be driving
 function initGround() {
     // Materials
-    var groundTex = THREE.ImageUtils.loadTexture( 'floor.png' );
+    var groundTex = THREE.ImageUtils.loadTexture( 'images/floor.png' );
     //var groundTex = THREE.ImageUtils.loadTexture( 'arena.png' );
     var groundMat = new THREE.MeshLambertMaterial( { map: groundTex } );
     
@@ -89,8 +89,7 @@ function makeBadRoad(section) {
     var roadGeom = new THREE.BoxGeometry(36, 36, 0.25);
     var roadMat = new THREE.MeshLambertMaterial({color: 0x664422});
 //    var roadMat = Physijs.createMaterial( roadMat, 0.8, 0.2 );
-    var roadMesh;
-    roadMesh = new THREE.BoxMesh( roadGeom, roadMat);
+    var roadMesh = new THREE.Mesh( roadGeom, roadMat);
 
     roadMesh.position.z = 0.125;
     roadMesh.receiveShadow = true;
@@ -101,7 +100,7 @@ function makeBadRoad(section) {
     var bump;
     var offset = 4.5*Math.cos(Math.PI/4)-17.5;
     for (var i=0; i<4; ++i) {
-        for (var j=0; j<4; ++j);
+        for (var j=0; j<4; ++j) {
             bump = new THREE.Mesh(bumpGeom, bumpMat);
             bump.rotation.z = Math.PI/4;
             bump.position.set(offset+9.5*i, offset+9.5*j, 0.25);
@@ -113,14 +112,14 @@ function makeBadRoad(section) {
     for (var i=0; i<3; ++i) {
         for (var j=0; j<3; ++j) {
             bump = new THREE.Mesh(bumpGeom, bumpMat);
-
+	    
             bump.rotation.z = -Math.PI/4;
             bump.position.set(offset+9.5*i, offset+9.5*j, 0.25);
             bump.receiveShadow = true;
             roadMesh.add(bump);
         }
     }
-    return roadMesh;
+return roadMesh;
 }
 
 // Create the ramp/bridge geometry
@@ -242,7 +241,7 @@ function makeOSOW (section) {
     backPlane.add(button);
 
     var phi = section * Math.PI/2;
-    backPlane.rotation.z = phi;
+    backPlane.rotation.z = -phi;
     backPlane.position.set( 116.5*Math.sin(phi), 116.5*Math.cos(phi), 20);
     scene.add(backPlane);
 }

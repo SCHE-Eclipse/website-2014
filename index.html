@@ -1,50 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>BEST Robotics 2014 Simulator</title>
-    <meta charset="utf-8"></meta>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"></meta>
+	<head>
+		<title>BEST Robotics 2014 Simulator</title>
+		<meta charset="utf-8"></meta>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"></meta>
     <style>
-      body {
-      font-family: Monospace;
-      background-color: #000000;
-      margin: 0px;
-      overflow: hidden;
-      }
-      
-      #info {
-      color: #fff;
-      position: absolute;
-      top: 10px;
-      width: 100%;
-      text-align: center;
-      z-index: 100;
-      display:block;
-      
-      }
-      
-      a { color: skyblue }
-      .button { background:#999; color:#eee; padding:0.2em 0.5em; cursor:pointer }
-      .highlight { background:orange; color:#fff; }
-      
-      span {
-      display: inline-block;
-      width: 60px;
-      float: left;
-      text-align: center;
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color: #000;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+
+			}
+
+			#time {
+				color: #9f2;
+        font-size: 40px;
+				position: absolute;
+				top: 10px;
+				width: 90px;
+			  right: 10px;
+				text-align: right;
+				z-index: 100;
+				display:block;
+			}
+
+			#score {
+				color: #9f2;
+        font-size: 40px;
+				position: absolute;
+				top: 10px;
+				width: 300px;
+			  right: 150px;
+				text-align: right;
+				z-index: 100;
+				display:block;
+			}
+
+			#alert {
+				color: #AF8;
+        font-size: 60px;
+        visibility: visible;
+				position: absolute;
+				top: 50%;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+			}
+
+			a {
+        color: red
       }
     </style>
-    
+
     <script src="js/libs/three.min.js"></script>
     <script src="js/libs/stats.min.js"></script>
     <script src="js/libs/OrbitControls.js"></script>
-    <script src="js/arena.js"></script>
     <script src="js/bladerunner.js"></script>
-  </head>
-  <body onload="initBladeRunner();">
-    <div id="info">
-      BEST Robotics 2014
-    </div>
-    
-  </body>
+    <script src="js/arena.js"></script>
+    <script src="js/robot.js"></script>
+    <script src="js/static.js"></script>
+    <script src="js/dynamic.js"></script>
+	</head>
+	<body onload="initBladeRunner();">
+		<div id="info">
+			<a href="http://best.eng.auburn.edu">BEST 2014 - BladeRunner</a><br/>
+      <a href="http://www.schescience.org">SCHE Eclipse Robotics</a>
+		</div>
+    <div id="score">000</div>
+    <div id="time">3:00</div>
+  
+	</body>
 </html>

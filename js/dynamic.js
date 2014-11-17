@@ -85,17 +85,13 @@ function initChickens(section) {
         var x=-20, y=j*34-108, z = 3.5;
         var r = Math.sqrt(x*x + y*y);
         var theta = Math.atan2(y, x);
-        var lower = ( active ?
-                      new THREE.CylinderMesh(lowerGeom, pvcMat, 100) :
-                      new THREE.Mesh(lowerGeom, pvcMat) );
+        var lower = new THREE.Mesh(lowerGeom, pvcMat);
         lower.castShadow = true;
         lower.receiveShadow = true;
         lower.rotation.x = Math.PI/2;
         lower.position.set(r*Math.cos(theta+phi), r*Math.sin(theta+phi), z);
 
-        var upper = ( active ?
-                      new THREE.CylinderMesh(upperGeom, pvcMat, 500) :
-                      new THREE.Mesh(upperGeom, pvcMat) );
+        var upper = new THREE.Mesh(upperGeom, pvcMat);
         upper.castShadow = true;
         upper.receiveShadow = true;
         upper.position.set(0, 3.5, 0);
@@ -111,14 +107,14 @@ function makeTurbineMast() {
     var mast = new THREE.Object3D();
 
     var LTBmastbackgeo = new THREE.BoxGeometry(4, 0.75, 36);
-    var LTBmastback = new THREE.Mesh(LTBmastbackgeo, wood1Mat);
+    var LTBmastback = new THREE.Mesh(LTBmastbackgeo, woodMat);
     LTBmastback.castShadow = true;
     LTBmastback.receiveShadow = true;
     LTBmastback.position.set(0, -9.875, 18);
     mast.add(LTBmastback);
 
     var LTBmastbottomgeo = new THREE.BoxGeometry(15, 8, 0.75);
-    var LTBmastbottom = new THREE.Mesh(LTBmastbottomgeo, wood1Mat);
+    var LTBmastbottom = new THREE.Mesh(LTBmastbottomgeo, woodMat);
     LTBmastbottom.castShadow = true;
     LTBmastbottom.receiveShadow = true;
     LTBmastbottom.position.set(0, -4, 1.125);
@@ -179,7 +175,7 @@ function makeLargeTurbineNacelle() {
     nacelle.add( LTBcollar );
 
     var LTBbladehubgeo = new THREE.CylinderGeometry(7, 7, 2, 6, 1, false);
-    var LTBbladehub =  new THREE.Mesh(LTBbladehubgeo, wood1Mat);
+    var LTBbladehub =  new THREE.Mesh(LTBbladehubgeo, woodMat);
     LTBbladehub.castShadow = true;
     LTBbladehub.receiveShadow = true;
     //LTBbladehub.rotation.y = Math.PI/6;
@@ -188,7 +184,7 @@ function makeLargeTurbineNacelle() {
     nacelle.add( LTBbladehub );
 
     var LTBbottomgeo = new THREE.BoxGeometry(6, 10, 0.25);
-    var LTBbottom = new THREE.Mesh(LTBbottomgeo, wood1Mat);
+    var LTBbottom = new THREE.Mesh(LTBbottomgeo, woodMat);
     LTBbottom.castShadow = true;
     LTBbottom.receiveShadow = true;
     LTBbottom.position.z = 3;
@@ -349,7 +345,7 @@ function makeSmallNacelle() {
     smNacelle.add(join);
 
     var bottomGeom = new THREE.BoxGeometry(4, 12, .25);
-    var bottom = new THREE.Mesh(bottomGeom, wood1Mat);
+    var bottom = new THREE.Mesh(bottomGeom, woodMat);
     bottom.position.set(0, -2, -1.5);
     smNacelle.add(bottom);
 

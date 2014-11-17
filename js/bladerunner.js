@@ -55,7 +55,7 @@ var scoreKeeper = {
     interval: null
 };
 
-function showReadyClock() {
+/*function showReadyClock() {
     gamePaused = true;
     var startTime = Date.now();
     var docElem = document.getElementById("alert");
@@ -132,7 +132,7 @@ function updateGameClock() {
         display.innerHTML = minutes.toString() + ":" + seconds.toString();
     }
 };
-
+*/
 function updateScore() {
     scoreKeeper.score = computeScore();
     var display = document.getElementById("score");
@@ -186,7 +186,7 @@ function initBladeRunner() {
     initControls();
 
     // Give the ready.. set.. go.. countdown.
-    showReadyClock();
+ //   showReadyClock();
 
     // Launch the animation loop
     animate();
@@ -524,9 +524,6 @@ function animate() {
             //console.log(smHubTweens[i]);
             //smHubTweens[i] = undefined;
         }
-    }
-    if ( scene.simulate(undefined, 2) ) {
-        physics_stats.update();
     }
     render();
 }
