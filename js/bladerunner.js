@@ -283,6 +283,7 @@ function initControls() {
 
 		document.addEventListener( 'keydown', function( ev ) {
         switch( ev.key ) {
+/*
         case 'a':
             // Left
             robot.axleL.configureAngularMotor(0, 1, 0,  maxSpeed, maxPower);
@@ -311,6 +312,7 @@ function initControls() {
             robot.axleL.enableAngularMotor( 0 );
             robot.axleR.enableAngularMotor( 0 );
 						break;
+*/
         case ',':
             lowerSmallTurbineMast();
             break;
@@ -334,6 +336,7 @@ function initControls() {
 
 		document.addEventListener( 'keyup', function( ev ) {
 				switch( ev.key ) {
+/*
 				case 'a':
 						// Left
 						robot.axleL.disableAngularMotor( 0 );
@@ -357,6 +360,7 @@ function initControls() {
 						robot.axleL.disableAngularMotor( 0 );
 						robot.axleR.disableAngularMotor( 0 );
 						break;
+*/
 				}
 			}
 		);
@@ -364,9 +368,7 @@ function initControls() {
     window.addEventListener('resize', onWindowResize, false);
     
     window.addEventListener('gamepadconnected', function(e) {
-        gamepad = ( webkitGamepad ?
-                    navigator.webkitGetGamepads()[e.gamepad.index] :
-                    navigator.getGamepads()[e.gamepad.index] );
+        gamepad = navigator.getGamepads()[e.gamepad.index];
         console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
                     gamepad.index, gamepad.id,
                     gamepad.buttons.length,
@@ -395,9 +397,7 @@ function onWindowResize(event) {
 }
 
 function updateJoystick() {
-    if ( webkitGamepad ) {
-        gamepad = navigator.webkitGetGamepads()[0];
-    }
+    gamepad = navigator.getGamepads()[0];
     if (!gamepad || !gamepad.connected) return;
 
     // Left stick
@@ -434,6 +434,7 @@ function updateJoystick() {
     var pR = maxPower;
     var vL = maxSpeed*(RY-RX);
     var vR = maxSpeed*(RY+RX);
+/*
     if (Math.abs(vL) > 0.1 || Math.abs(vR) > 0.1) {
 		    robot.axleL.configureAngularMotor( 0, 1, 0, vL, pL );
 		    robot.axleR.configureAngularMotor( 0, 1, 0, vR, pR );
@@ -477,7 +478,7 @@ function updateJoystick() {
         grippedItem.setAngularFactor(new THREE.Vector3(1,1,1));
         grippedItem = null;
     }
-
+*/
     if (X) {
         if (smMasts[activeSection].userData.raised) {
             console.log("Lower");
@@ -488,13 +489,18 @@ function updateJoystick() {
             raiseSmallTurbineMast();
         }
     }
+    if (Y) {
+        console.log("Open Small Turbine Blades");
+        openSmallBlades();
+    }
+/*
     if (DN) {
         robot.arm.rotation.x -= 5*Math.PI/180;
     }
     if (DS) {
         robot.arm.rotation.x += 5*Math.PI/180;
     }
-
+*/
 /*
     // Left stick controls the camera
     if (LS) {
@@ -515,7 +521,7 @@ function updateJoystick() {
 }
 
 function animate() {
-    frameRequest(animate);
+    requestAnimationFrame(animate);
     updateJoystick();
     updateScore();
     for (var i=0; i<3; ++i) {

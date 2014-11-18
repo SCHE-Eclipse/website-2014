@@ -44,7 +44,7 @@ function initDynamicBodies() {
         smBladeHubs[i].rotation.y = -phi;
         smBladeHubs[i].rotation.x = -Math.PI/2;
         smBladeHubs[i].position.set(r*Math.cos(theta+phi),
-                                    r*Math.sin(theta+phi), 6);
+                                    r*Math.sin(theta+phi), 3.75);
         scene.add(smBladeHubs[i]);
         
         x = -55;
@@ -197,77 +197,81 @@ function makeLargeTurbineNacelle() {
     return nacelle
 }
 
-function raiseSmallTurbineMast() {
-    smMasts[activeSection].userData.interval = setInterval( function() {
-        if (activeSection%2) {
-            if (smMasts[activeSection].rotation.y < 0) {
-                smMasts[activeSection].rotation.y += Math.PI/100;
-                smMasts[activeSection].userData.lowered = false;
+function raiseSmallTurbineMast(section) {
+    section = ( section === undefined ? activeSection : section );
+    smMasts[section].userData.interval = setInterval( function() {
+        if (section%2) {
+            if (smMasts[section].rotation.y < 0) {
+                smMasts[section].rotation.y += Math.PI/100;
+                smMasts[section].userData.lowered = false;
             }
             else {
-                smMasts[activeSection].userData.raised = true;
-                clearInterval(smMasts[activeSection].userData.interval);
+                smMasts[section].userData.raised = true;
+                clearInterval(smMasts[section].userData.interval);
             }
         }
         else {
-            if (smMasts[activeSection].rotation.x < 0) {
-                smMasts[activeSection].rotation.x += Math.PI/100;
-                smMasts[activeSection].userData.lowered = false;
+            if (smMasts[section].rotation.x < 0) {
+                smMasts[section].rotation.x += Math.PI/100;
+                smMasts[section].userData.lowered = false;
             }
             else {
-                smMasts[activeSection].userData.raised = true;
-                clearInterval(smMasts[activeSection].userData.interval);
+                smMasts[section].userData.raised = true;
+                clearInterval(smMasts[section].userData.interval);
             }
         }
     }, 10 );
 }
 
-function lowerSmallTurbineMast() {
-    smMasts[activeSection].userData.interval = setInterval( function() {
-        if (activeSection%2) {
-            if (smMasts[activeSection].rotation.y > -Math.PI/2) {
-                smMasts[activeSection].rotation.y -= Math.PI/100;
-                smMasts[activeSection].userData.raised = false;
+function lowerSmallTurbineMast(section) {
+    section = ( section === undefined ? activeSection : section );
+    smMasts[section].userData.interval = setInterval( function() {
+        if (section%2) {
+            if (smMasts[section].rotation.y > -Math.PI/2) {
+                smMasts[section].rotation.y -= Math.PI/100;
+                smMasts[section].userData.raised = false;
             }
             else {
-                smMasts[activeSection].userData.lowered = true;
-                clearInterval(smMasts[activeSection].userData.interval);
+                smMasts[section].userData.lowered = true;
+                clearInterval(smMasts[section].userData.interval);
             }
         }
         else {
-            if (smMasts[activeSection].rotation.x > -Math.PI/2) {
-                smMasts[activeSection].rotation.x -= Math.PI/100;
-                smMasts[activeSection].userData.raised = false;
+            if (smMasts[section].rotation.x > -Math.PI/2) {
+                smMasts[section].rotation.x -= Math.PI/100;
+                smMasts[section].userData.raised = false;
             }
             else {
-                smMasts[activeSection].userData.lowered = true;
-                clearInterval(smMasts[activeSection].userData.interval);
+                smMasts[section].userData.lowered = true;
+                clearInterval(smMasts[section].userData.interval);
             }
         }
     }, 10 );
 }
 
-function raiseLargeTurbineMast(index) {
-    if (lgMasts[activeSection].rotation.z < 1) {
-        lgMasts[activeSection].rotation.x += 0.02*Math.PI;
-        lgMasts[activeSection].rotation.y += 0.01*Math.PI;
-        lgMasts[activeSection].rotation.z += 0.01*Math.PI;
-        lgMasts[activeSection].__dirtyRotation = true;
+function raiseLargeTurbineMast(section) {
+    section = ( section === undefined ? activeSection : section );
+    if (lgMasts[section].rotation.z < 1) {
+        lgMasts[section].rotation.x += 0.02*Math.PI;
+        lgMasts[section].rotation.y += 0.01*Math.PI;
+        lgMasts[section].rotation.z += 0.01*Math.PI;
+        lgMasts[section].__dirtyRotation = true;
     }
     else {
-        lgMasts[activeSection].userData.raised = false;
+        lgMasts[section].userData.raised = false;
     }
 }
 
-function lowerLargeTurbineMast(index) {
-    if (lgMasts[activeSection].rotation.x > -Math.PI/2) {
-        lgMasts[activeSection].rotation.x -= 0.02*Math.PI;
-        lgMasts[activeSection].rotation.y -= 0.01*Math.PI;
-        lgMasts[activeSection].rotation.z -= 0.01*Math.PI;
-        lgMasts[activeSection].__dirtyRotation = true;
+function lowerLargeTurbineMast(section) {
+    section = ( section === undefined ? activeSection : section );
+    if (lgMasts[section].rotation.x > -Math.PI/2) {
+        lgMasts[section].rotation.x -= 0.02*Math.PI;
+        lgMasts[section].rotation.y -= 0.01*Math.PI;
+        lgMasts[section].rotation.z -= 0.01*Math.PI;
+        lgMasts[section].__dirtyRotation = true;
     }
     else {
-        lgMasts[activeSection].userData.raised = true;
+        lgMasts[section].userData.raised = true;
     }
 }
 
@@ -342,6 +346,7 @@ var QuarterCircle = THREE.Curve.create(
         return new THREE.Vector3(tx, ty, tz).multiplyScalar(this.scale);
     }
 );
+
 var smbOpenedAngles = [ 0, -2*Math.PI/3, 2*Math.PI/3 ];
 var smbClosedAngles = [ 0, 2.5*Math.PI/180, -2.5*Math.PI/180 ];
 
@@ -378,27 +383,31 @@ function makeSmallBladeHub(i) {
         smElbow.add(smBlade);
 
         smBlades[i][j] = smElbow;
+        smBlades[i][j].userData.opened = false;
+        smBlades[i][j].userData.closed = true;
         smHub.add(smbMount);
     }
     return smHub;
 }
 
-function openSmallBlades(index) {
-    for (var i=1; i<3; ++i) {
-        var begin = smHubs[index].children[i].rotation.clone();
-        var end = smHubs[index].children[i].rotation.clone();
-        end.y = smbOpenedAngles[i];
-        smHubTweens[i] = new TWEEN.Tween( { blade: smHubs[index].children[i],
+function openSmallBlades(i) {
+    for (var j=1; j<3; ++j) {
+        var begin = smBlades[i][j].rotation.clone();
+        var end = smBlades[i][j].rotation.clone();
+        end.y = smbOpenedAngles[j];
+        smHubTweens[j] = new TWEEN.Tween( { blade: smBlades[i][j],
                                             rot: begin } );
-        smHubTweens[i].to( { rot: end }, 2000 );
-        smHubTweens[i].onUpdate( function() {
+        smHubTweens[j].to( { rot: end }, 2000 );
+        smHubTweens[j].onUpdate( function() {
+            smBlades[i][j].userData.closed = false;
             this.blade.rotation.y = this.rot.y;
             this.blade.__dirtyRotation = true;
         } );
-        smHubTweens[i].onComplete( function() {
-            smHubTweens[i] = undefined;
+        smHubTweens[j].onComplete( function() {
+            smBlades[i][j].userData.opened = true;
+            smHubTweens[j] = undefined;
         } );
-        smHubTweens[i].start();
+        smHubTweens[j].start();
     }
 }
 
@@ -411,11 +420,13 @@ function closeSmallBlades(index) {
                                             rot: begin } );
         smHubTweens[i].to( { rot: end }, 2000 );
         smHubTweens[i].onUpdate( function() {
+            smHubs[index].children[i].userData.opened = false;
             this.blade.rotation.y += 0.001*(smbClosedAngles[i] - smbOpenedAngles[i]);
             this.blade.__dirtyRotation = true;
         } );
         smHubTweens[i].onComplete( function() {
             smHubTweens[i] = undefined;
+            smHubs[index].children[i].userData.closed = true;
         } );
         smHubTweens[i].start();
     }
