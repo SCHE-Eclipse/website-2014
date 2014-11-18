@@ -4,45 +4,15 @@ function initDynamicBodies() {
         var phi = i*Math.PI/2;
 
         initChickens(i);
+        initLargeBlades(i);
 
-        x = 26;
-        y = -108.5;
-        r = Math.sqrt(x*x + y*y);
-        theta = Math.atan2(y, x);
-        smMasts[i] = makeTurbineMast();
-        smMasts[i].rotation.z = phi;
-        //smMasts[i].rotation.x = -Math.PI/2 * Math.cos(phi);
-        //smMasts[i].rotation.y = -Math.PI/2 * Math.sin(phi);
-        smMasts[i].position.set(r*Math.cos(theta+phi),
-                               r*Math.sin(theta+phi), 0.375);
-        smMasts[i].userData.lowered = false;
-        smMasts[i].userData.raised = true;
-        scene.add(smMasts[i]);
-
-        x = 97.77;
-        y = -111.77;
-        r = Math.sqrt(x*x + y*y);
-        theta = Math.atan2(y, x);
-        lgMasts[i] = makeTurbineMast();
-        lgMasts[i].rotation.z = phi;
-        lgMasts[i].rotateOnAxis(new THREE.Vector3(0,0,1), Math.PI/4);
-        lgMasts[i].position.set(r*Math.cos(theta+phi),
-                                r*Math.sin(theta+phi), 0);
-        lgMasts[i].userData.raised = false;
-        // Add large turbine nacelle to it's mast
-        var lgNacelle = makeLargeTurbineNacelle();
-        lgNacelle.rotation.z = -Math.PI/2;
-        lgNacelle.position.set(-8, -6.5, 34.5);
-        lgMasts[i].add(lgNacelle);
-        scene.add(lgMasts[i]);
-        /*
         x = -30;
         y = -120;
         r = Math.sqrt(x*x + y*y);
         theta = Math.atan2(y, x);
         makeSmallBladeHub(i, r*Math.cos(theta+phi),
                           r*Math.sin(theta+phi), 2);
-        */
+
         x = -70;
         y = -125;
         r = Math.sqrt(x*x + y*y);
@@ -55,29 +25,10 @@ function initDynamicBodies() {
         scene.add(smNacelles[i]);
     }
 }
-/*
-function initChickens() {
-    for (var i=0; i<4; ++i) {
-        var phi = i*Math.PI/2;
-        chickens[i] = [];
-        for (var j=0; j<3; ++j) {
-            var x0 = 20;
-            var y0 = 108-j*34;
-            var z0 = 3.5;
-            var r0 = Math.sqrt(x0*x0 + y0*y0);
-            var theta = Math.atan2(y0,x0);
-            var chicken = makeChicken(i);
-            chicken.position.set(r0*Math.cos(theta+phi),
-                                 r0*Math.sin(theta+phi), z0);
-            chickens[i][j] = chicken;
-            scene.add(chicken);
-        }
-    }
-}
-*/
 
 function initChickens(section) {
-    var phi = section * Math.PI/2;
+    var s = ( section === undefined ? activeSection : section );
+    var phi = s * Math.PI/2;
     var active = (section == activeSection);
     var lowerGeom = new THREE.CylinderGeometry(2, 2, 7, 16);
     var upperGeom = new THREE.CylinderGeometry(2.25, 2.25, 3, 16);
@@ -103,209 +54,68 @@ function initChickens(section) {
     }
 }
 
-function makeTurbineMast() {
-    var mast = new THREE.Object3D();
 
-    var LTBmastbackgeo = new THREE.BoxGeometry(4, 0.75, 36);
-    var LTBmastback = new THREE.Mesh(LTBmastbackgeo, woodMat);
-    LTBmastback.castShadow = true;
-    LTBmastback.receiveShadow = true;
-    LTBmastback.position.set(0, -9.875, 18);
-    mast.add(LTBmastback);
-
-    var LTBmastbottomgeo = new THREE.BoxGeometry(15, 8, 0.75);
-    var LTBmastbottom = new THREE.Mesh(LTBmastbottomgeo, woodMat);
-    LTBmastbottom.castShadow = true;
-    LTBmastbottom.receiveShadow = true;
-    LTBmastbottom.position.set(0, -4, 1.125);
-    mast.add(LTBmastbottom);
-
-    var LTBmastgeo = new THREE.CylinderGeometry(2, 2, 36, 16, 1, true);
-    var LTBmast = new THREE.Mesh(LTBmastgeo, pvcMatDS);
-    LTBmast.castShadow = true;
-    LTBmast.receiveShadow = true;
-    LTBmast.rotation.x = Math.PI/2;
-    LTBmast.position.set(0, -4, 19.5);
-    mast.add(LTBmast);
-
-    return mast;
-}
-
-function makeLargeTurbineNacelle() {
-    var nacelle = new THREE.Object3D();
-    var LTBmedPVCgeo = new THREE.CylinderGeometry(1, 1, 10, 16, 1, true);
-    var LTBsmlPVCgeo = new THREE.CylinderGeometry(0.5, 0.5, 10, 16, 1, true);
-    var radius  = Math.sqrt(1.25) + Math.sqrt(3);
-    for (var l = 0; l < 6; l++) {
-	      var theta = l * Math.PI / 3 + Math.PI / 6;
-	      var x = Math.sin(theta) * radius;
-	      var z = 6 + Math.cos(theta) * radius;
-	      var mesh2 = new THREE.Mesh(LTBsmlPVCgeo, pvcMatDS);
-	      mesh2.castShadow = true;
-	      mesh2.receiveShadow = true;
-	      mesh2.position.set(x, 8, z);
-	      nacelle.add(mesh2);
-    }
-    var r = 2;
-    for (var j = 0; j < 6; j++) {
-	      var theta = j * Math.PI / 3;
-	      var x = Math.sin(theta) * r;
-	      var z = 6 + Math.cos(theta) * r;
-	      var mesh = new THREE.Mesh(LTBmedPVCgeo, pvcMatDS);
-	      mesh.castShadow = true;
-	      mesh.receiveShadow = true;
-	      mesh.position.set(x, 8, z);
-	      nacelle.add(mesh);
-    }
-
-    var LTBlgPVCgeo = new THREE.CylinderGeometry(1, 1, 17, 16, 1, false);
-    var LTBlgPVC = new THREE.Mesh(LTBlgPVCgeo, pvcMat);
-    LTBlgPVC.castShadow = true;
-    LTBlgPVC.receiveShadow = true;
-    LTBlgPVC.position.z = 6;
-    LTBlgPVC.position.y = 6;
-    nacelle.add( LTBlgPVC );
-
-    var LTBcollargeo = new THREE.CylinderGeometry(1.5, 1.5, 2, 16, 1, false);
-    var LTBcollar = new THREE.Mesh(LTBcollargeo, pvcMat);
-    LTBcollar.castShadow = true;
-    LTBcollar.receiveShadow = true;
-    LTBcollar.position.z = 6;
-    LTBcollar.position.y = 2;
-    nacelle.add( LTBcollar );
-
-    var LTBbladehubgeo = new THREE.CylinderGeometry(7, 7, 2, 6, 1, false);
-    var LTBbladehub =  new THREE.Mesh(LTBbladehubgeo, woodMat);
-    LTBbladehub.castShadow = true;
-    LTBbladehub.receiveShadow = true;
-    //LTBbladehub.rotation.y = Math.PI/6;
-    LTBbladehub.position.z = 6;
-    LTBbladehub.position.y = 0;
-    nacelle.add( LTBbladehub );
-
-    var LTBbottomgeo = new THREE.BoxGeometry(6, 10, 0.25);
-    var LTBbottom = new THREE.Mesh(LTBbottomgeo, woodMat);
-    LTBbottom.castShadow = true;
-    LTBbottom.receiveShadow = true;
-    LTBbottom.position.z = 3;
-    LTBbottom.position.y = 8;
-    nacelle.add( LTBbottom );
-    return nacelle
-}
-
-function raiseSmallTurbineMast() {
-    smMasts[activeSection].userData.interval = setInterval( function() {
-        if (activeSection%2) {
-            if (smMasts[activeSection].rotation.y < 0) {
-                smMasts[activeSection].rotation.y += Math.PI/100;
-                smMasts[activeSection].userData.lowered = false;
-            }
-            else {
-                smMasts[activeSection].userData.raised = true;
-                clearInterval(smMasts[activeSection].userData.interval);
-            }
-        }
-        else {
-            if (smMasts[activeSection].rotation.x < 0) {
-                smMasts[activeSection].rotation.x += Math.PI/100;
-                smMasts[activeSection].userData.lowered = false;
-            }
-            else {
-                smMasts[activeSection].userData.raised = true;
-                clearInterval(smMasts[activeSection].userData.interval);
-            }
-        }
-    }, 10 );
-}
-
-function lowerSmallTurbineMast() {
-    smMasts[activeSection].userData.interval = setInterval( function() {
-        if (activeSection%2) {
-            if (smMasts[activeSection].rotation.y > -Math.PI/2) {
-                smMasts[activeSection].rotation.y -= Math.PI/100;
-                smMasts[activeSection].userData.raised = false;
-            }
-            else {
-                smMasts[activeSection].userData.lowered = true;
-                clearInterval(smMasts[activeSection].userData.interval);
-            }
-        }
-        else {
-            if (smMasts[activeSection].rotation.x > -Math.PI/2) {
-                smMasts[activeSection].rotation.x -= Math.PI/100;
-                smMasts[activeSection].userData.raised = false;
-            }
-            else {
-                smMasts[activeSection].userData.lowered = true;
-                clearInterval(smMasts[activeSection].userData.interval);
-            }
-        }
-    }, 10 );
-}
-
-function raiseLargeTurbineMast(index) {
-    if (lgMasts[activeSection].rotation.z < 1) {
-        lgMasts[activeSection].rotation.x += 0.02*Math.PI;
-        lgMasts[activeSection].rotation.y += 0.01*Math.PI;
-        lgMasts[activeSection].rotation.z += 0.01*Math.PI;
-        lgMasts[activeSection].__dirtyRotation = true;
-    }
-    else {
-        lgMasts[activeSection].userData.raised = false;
+function initLargeBlades(section) {
+    var s = ( section === undefined ? activeSection : section );
+    var x = [ -50, -73, -47, -66, -40, -63 ];
+    var y = [ -60, -87, -67, -90, -70, -97 ];
+    var z = [ 0.75, 3.25, 0.75, 3.25, 0.75, 3.25 ];
+    var phi = s * Math.PI/2;
+    for (var i=0; i<6; ++i) {
+        r = Math.sqrt(x[i]*x[i] + y[i]*y[i]);
+        theta = Math.atan2(y[i], x[i]);
+        var lgBlade = makeLargeTurbineBlade();
+        lgBlade.rotation.z = phi + Math.cos(i*Math.PI/2)*Math.PI - Math.PI/4;
+        lgBlade.position.set(r*Math.cos(theta+phi),
+                             r*Math.sin(theta+phi),
+                             z[i]);
+        scene.add(lgBlade);
     }
 }
 
-function lowerLargeTurbineMast(index) {
-    if (lgMasts[activeSection].rotation.x > -Math.PI/2) {
-        lgMasts[activeSection].rotation.x -= 0.02*Math.PI;
-        lgMasts[activeSection].rotation.y -= 0.01*Math.PI;
-        lgMasts[activeSection].rotation.z -= 0.01*Math.PI;
-        lgMasts[activeSection].__dirtyRotation = true;
-    }
-    else {
-        lgMasts[activeSection].userData.raised = true;
-    }
-}
+function makeLargeTurbineBlade() {
+    var blade = new THREE.Group();
 
-var smbOpenedAngles = [ 0, -2*Math.PI/3, 2*Math.PI/3 ];
-var smbClosedAngles = [ 0, 3*Math.PI/180, -3*Math.PI/180 ];
+    var foamGeom = new THREE.CylinderGeometry(1.5, 1.5, 32, 16);
+    var endCapGeom = new THREE.CylinderGeometry(1.25, 1.25, 1.5, 16);
+    var tubeGeom = new THREE.CylinderGeometry(1.0, 1.0, 2.0, 16);
+    var crossGeom = new THREE.CylinderGeometry(1.25, 1.25, 4.0, 16);
+    var stemGeom = new THREE.CylinderGeometry(1.25, 1.25, 4.0, 16);
 
-function makeSmallBladeHub(i, x0, y0, z0) {
-    var smHubGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.0, 6);
-    smHubs[i] = new THREE.Mesh(smHubGeom, woodMat);
-    //smHubs[i].rotation.x = Math.PI/2;
-    smHubs[i].position.set(x0, y0, z0);
-    scene.add(smHubs[i]);
-    smBlades[i] = [];
-    
-    var smbMountGeom = new THREE.CylinderGeometry(0.5, 0.5, 3);
-    var smBladeGeom = new THREE.CylinderGeometry(0.5, 0.5, 20);
-    for (var j=0; j<3; ++j) {
-        //var offset = new THREE.Vector3(x0 + 2.125*Math.cos(j*2*Math.PI/3),
-        //                               y0 + 2.125*Math.sin(j*2*Math.PI/3),
-        //                               z0 + 2.5);
-        var x = 2.125*Math.cos(j*2*Math.PI/3);
-        var y = 2.5;
-        var z = 2.125*Math.sin(j*2*Math.PI/3);
-        var smbMount = new THREE.Mesh(smbMountGeom, pvcMat);
-        smbMount.position.set(x, y, z);
-        
-        var smBlade = new THREE.Mesh(smBladeGeom, pvcMat);
-        smBlade.rotation.z = Math.PI/2;
-        smBlade.rotation.x = Math.PI/2 + smbClosedAngles[j];
-        smBlade.position.set(0, 10, 1.5);
-        smbMount.add(smBlade);
+    var foamMesh = new THREE.Mesh(foamGeom, foamMat);
+    var endMesh1 = new THREE.Mesh(endCapGeom, pvcMat);
+    var endMesh2 = new THREE.Mesh(endCapGeom, pvcMat);
+    var tubeMesh1 = new THREE.Mesh(tubeGeom, pvcMat);
+    var tubeMesh2 = new THREE.Mesh(tubeGeom, pvcMat);
+    var crossMesh = new THREE.Mesh(crossGeom, pvcMat);
+    var stemMesh = new THREE.Mesh(endCapGeom, pvcMat);
 
-        smBlades[i][j] = smBlade;
-        smHubs[i].add(smbMount);
+    crossMesh.rotation.z = Math.PI/2;
+    blade.add(crossMesh);
 
-        //var constraint = new Physijs.DOFConstraint( smBlades[i][j], smHubs[i],
-        //                                            {x:x0+x, y:y0+y, z:z0+z} );
-        //constraint.setAngularLowerLimit({x: 0, y: smbClosedAngles[i], z: 0});
-        //constraint.setAngularUpperLimit({x: 0, y: smbOpenedAngles[i], z: 0});
-        //scene.addConstraint(constraint);
-    }
+    stemMesh.position.y = 1.25;
+    blade.add(stemMesh);
 
+    tubeMesh1.rotation.z = Math.PI/2;
+    tubeMesh1.position.x = -3.0;
+    blade.add(tubeMesh1);
+
+    tubeMesh2.rotation.z = Math.PI/2;
+    tubeMesh2.position.x =  3.0;
+    blade.add(tubeMesh2);
+
+    foamMesh.position.y = 18;
+    blade.add(foamMesh);
+
+    endMesh1.rotation.z = Math.PI/2;
+    endMesh1.position.x = -4.0;
+    blade.add(endMesh1);
+
+    endMesh2.rotation.z = Math.PI/2;
+    endMesh2.position.x =  4.0;
+    blade.add(endMesh2);
+
+    return blade;
 }
 
 function makeSmallNacelle() {
@@ -368,40 +178,53 @@ function makeSmallNacelle() {
     return smNacelle;
 }
 
-function openSmallBlades(index) {
-    for (var i=1; i<3; ++i) {
-        var begin = smHubs[index].children[i].rotation.clone();
-        var end = smHubs[index].children[i].rotation.clone();
-        end.y = smbOpenedAngles[i];
-        smHubTweens[i] = new TWEEN.Tween( { blade: smHubs[index].children[i],
-                                            rot: begin } );
-        smHubTweens[i].to( { rot: end }, 2000 );
-        smHubTweens[i].onUpdate( function() {
-            this.blade.rotation.y = this.rot.y;
-            this.blade.__dirtyRotation = true;
-        } );
-        smHubTweens[i].onComplete( function() {
-            smHubTweens[i] = undefined;
-        } );
-        smHubTweens[i].start();
+var QuarterCircle = THREE.Curve.create( 
+    function(scale) {
+        this.scale = ( scale===undefined ? 1 : scale );
+    },
+    function(t) {
+        var tx = 1.0-Math.cos(Math.PI*t/2);
+        var ty = Math.sin(Math.PI*t/2);
+        var tz = 0.0;
+        return new THREE.Vector3(tx, ty, tz).multiplyScalar(this.scale);
     }
-}
+);
 
-function closeSmallBlades(index) {
-    for (var i=1; i<3; ++i) {
-        var begin = smHubs[index].children[i].rotation.clone();
-        var end = smHubs[index].children[i].rotation.clone();
-        end.y = smbClosedAngles[i];
-        smHubTweens[i] = new TWEEN.Tween( { blade: smHubs[index].children[i],
-                                            rot: begin } );
-        smHubTweens[i].to( { rot: end }, 2000 );
-        smHubTweens[i].onUpdate( function() {
-            this.blade.rotation.y += 0.001*(smbClosedAngles[i] - smbOpenedAngles[i]);
-            this.blade.__dirtyRotation = true;
-        } );
-        smHubTweens[i].onComplete( function() {
-            smHubTweens[i] = undefined;
-        } );
-        smHubTweens[i].start();
+function makeSmallBladeHub(section) {
+    var s = ( section === undefined ? activeSection : section );
+    var path = new QuarterCircle(2);
+    var smHubGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.0, 6);
+    var smbMountGeom = new THREE.CylinderGeometry(0.75, 0.75, 3, 16);
+    var smbElbowGeom = new THREE.TubeGeometry(path, 10, 0.75, 16, false);
+    var smCapGeom = new THREE.CylinderGeometry(0.75, 0.75, 0.5, 16);
+    var smBladeGeom = new THREE.CylinderGeometry(0.5, 0.5, 20);
+
+    smHub = new THREE.Mesh(smHubGeom, woodMat);
+    smBlades[s] = [];
+    for (var j=0; j<3; ++j) {
+        var x = 2.125*Math.cos(j*2*Math.PI/3);
+        var y = -0.5;
+        var z = 2.125*Math.sin(j*2*Math.PI/3);
+        var smbMount = new THREE.Mesh(smbMountGeom, pvcMat);
+        smbMount.position.set(x, y, z);
+        
+        var smElbow = new THREE.Mesh(smbElbowGeom, pvcMat);
+        smElbow.rotation.y = smbClosedAngles[j];
+        smElbow.position.set(0, 1.5, 0);
+        smbMount.add(smElbow);
+
+        var smCap = new THREE.Mesh(smCapGeom, pvcMat);
+        smCap.rotation.z = Math.PI/2;
+        smCap.position.set(2.25, 2, 0);
+        smElbow.add(smCap);
+
+        var smBlade = new THREE.Mesh(smBladeGeom, pvcMat);
+        smBlade.rotation.z = Math.PI/2;
+        smBlade.position.set(11, 2, 0);
+        smElbow.add(smBlade);
+
+        smBlades[s][j] = smElbow;
+        smHub.add(smbMount);
     }
+    return smHub;
 }
