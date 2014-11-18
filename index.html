@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"></meta>
     <style>
 			body {
-				color: #000;
+				color: #FFF;
 				font-family:Monospace;
 				font-size:13px;
 				text-align:center;
@@ -18,7 +18,7 @@
 			}
 
 			#info {
-				color: #000;
+				color: #FFF;
 				position: absolute;
 				top: 10px;
 				width: 100%;
@@ -70,6 +70,7 @@
     </style>
 
     <script src="js/libs/three.min.js"></script>
+    <script src="js/libs/tween.min.js"></script>
     <script src="js/libs/stats.min.js"></script>
     <script src="js/libs/OrbitControls.js"></script>
     <script src="js/bladerunner.js"></script>
@@ -77,11 +78,13 @@
     <script src="js/robot.js"></script>
     <script src="js/static.js"></script>
     <script src="js/dynamic.js"></script>
+    <script src="js/kinematic.js"></script>
 	</head>
 	<body onload="initBladeRunner();">
 		<div id="info">
 			<a href="http://best.eng.auburn.edu">BEST 2014 - BladeRunner</a><br/>
-      <a href="http://www.schescience.org">SCHE Eclipse Robotics</a>
+      <a href="http://www.schescience.org">SCHE Eclipse Robotics</a><br>
+      keys: small mast(s), large mast(l), gate(g), small blades(b)
 		</div>
     <div id="score">000</div>
     <div id="time">3:00</div>

@@ -20,11 +20,16 @@ var maxSpeed = 20;
 var chickens = [];
 var smMasts = [];
 var lgMasts = [];
+var gates = [];
+var smbOpenedAngles = [ 0, -2*Math.PI/3, 2*Math.PI/3 ];
+var smbClosedAngles = [ 0, 2.5*Math.PI/180, -2.5*Math.PI/180 ];
 var smBladeHubs = [];
 var smBlades = [];
 var smNacelles = [];
-var smHubTweens = [];
-
+var smMastLock = true;
+var lgMastLock = true;
+var smBladesLock = true;
+var gateLock = true;
 var robot = {};
 var grippedItem = null;
 
@@ -33,6 +38,7 @@ var wood2Tex = new THREE.ImageUtils.loadTexture('images/wood2.jpg');
 var wood3Tex = new THREE.ImageUtils.loadTexture('images/wood3.jpg');
 
 //var wood1Mat = new THREE.MeshLambertMaterial( { color: 0x886644 } );
+var foamMat = new THREE.MeshLambertMaterial( { color: 0x888888 } );
 var woodMat = new THREE.MeshLambertMaterial( { map: wood1Tex } );
 var stoneMat = new THREE.MeshLambertMaterial( { color: 0x666666 } );
 var pvcMat = new THREE.MeshLambertMaterial( { color: 0xAAAAAA } );
@@ -74,7 +80,7 @@ var scoreKeeper = {
         startGameClock();
     }, 6000);
 };
-
+*/
 function startGameClock() {
     document.getElementById("time").innerHTML = "3:00";
     gameClock.startTime = Date.now();
@@ -132,7 +138,7 @@ function updateGameClock() {
         display.innerHTML = minutes.toString() + ":" + seconds.toString();
     }
 };
-*/
+
 function updateScore() {
     scoreKeeper.score = computeScore();
     var display = document.getElementById("score");
@@ -204,13 +210,14 @@ function initGUI() {
 		render_stats.domElement.style.zIndex = 100;
 		container.appendChild( render_stats.domElement );
 
+/*
 		// Graph that diplays the rate at which the simulation is running.
 		physics_stats = new Stats();
 		physics_stats.domElement.style.position = 'absolute';
 		physics_stats.domElement.style.top = '50px';
 		physics_stats.domElement.style.zIndex = 100;
 		container.appendChild( physics_stats.domElement );
-
+*/
     // The main viewport where the scene will be rendered.
 		renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor( backgroundColor, 1 );
@@ -229,7 +236,7 @@ function initScene() {
     scene.fog = new THREE.FogExp2( backgroundColor, 0.0002 );
     // Set up some global physics parameters
 //		scene.setGravity(new THREE.Vector3( 0, 0, -30 ));
-    
+/*    
 		scene.addEventListener( 'update', function() {
         if (!gamePaused) {
             if ( scene.simulate( undefined, 2 ) ) {
@@ -237,7 +244,7 @@ function initScene() {
             }
         }
     } );
-		
+*/	
     // The camera is the user's eye(s) into our scene
     camera = new THREE.PerspectiveCamera(60, WIDTH/HEIGHT, 0.1, 1000);
     camera.up.set(0, 0, 1);
@@ -263,6 +270,7 @@ function initScene() {
 
     initStaticBodies();
     initDynamicBodies();
+    initKinematicBodies();
 }
 
 function resetCamera() {
@@ -313,23 +321,25 @@ function initControls() {
             robot.axleR.enableAngularMotor( 0 );
 						break;
 */
-        case ',':
-            lowerSmallTurbineMast();
+        case 's':
+            if (smMastLock) {
+                toggleSmallMast(activeSection);
+            }
             break;
-        case '.':
-            raiseSmallTurbineMast();
+        case 'l':
+            if (lgMastLock) {
+                toggleLargeMast(activeSection);
+            }
             break;
-        case '<':
-            lowerLargeTurbineMast(activeSection);
+        case 'g':
+            if (gateLock) {
+                toggleGates(activeSection);
+            }
             break;
-        case '>':
-            raiseLargeTurbineMast(activeSection);
-            break;
-        case 'j':
-            closeSmallBlades(activeSection);
-            break;
-        case 'k':
-            openSmallBlades(activeSection);
+        case 'b':
+            if (smBladesLock) {
+                toggleSmallBlades(activeSection);
+            }
             break;
 				}
 		} );
@@ -480,18 +490,24 @@ function updateJoystick() {
     }
 */
     if (X) {
-        if (smMasts[activeSection].userData.raised) {
-            console.log("Lower");
-            lowerSmallTurbineMast();
-        }
-        else if (smMasts[activeSection].userData.lowered) {
-            console.log("Raise");
-            raiseSmallTurbineMast();
+        if (smMastLock) {
+            toggleSmallMast(activeSection);
         }
     }
     if (Y) {
-        console.log("Open Small Turbine Blades");
-        openSmallBlades();
+        if (lgMastLock) {
+            toggleLargeMast(activeSection);
+        }
+    }
+    if (B) {
+        if (smBladesLock) {
+            toggleSmallBlades(activeSection);
+        }
+    }
+    if (A) {
+        if (gateLock) {
+            toggleGates(activeSection);
+        }
     }
 /*
     if (DN) {
@@ -524,17 +540,12 @@ function animate() {
     requestAnimationFrame(animate);
     updateJoystick();
     updateScore();
-    for (var i=0; i<3; ++i) {
-        if (smHubTweens[i]) {
-            smHubTweens[i].update();
-            //console.log(smHubTweens[i]);
-            //smHubTweens[i] = undefined;
-        }
-    }
+
     render();
 }
 
 function render() {
+    TWEEN.update();
     renderer.render( scene, camera );
     render_stats.update();
 }
