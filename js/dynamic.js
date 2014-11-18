@@ -35,22 +35,26 @@ function initDynamicBodies() {
         lgNacelle.position.set(-8, -6.5, 34.5);
         lgMasts[i].add(lgNacelle);
         scene.add(lgMasts[i]);
-        /*
+        
         x = -30;
-        y = -120;
+        y = -130;
         r = Math.sqrt(x*x + y*y);
         theta = Math.atan2(y, x);
-        makeSmallBladeHub(i, r*Math.cos(theta+phi),
-                          r*Math.sin(theta+phi), 2);
-        */
-        x = -70;
-        y = -125;
+        smBladeHubs[i] = makeSmallBladeHub(i);
+        smBladeHubs[i].rotation.y = -phi;
+        smBladeHubs[i].rotation.x = -Math.PI/2;
+        smBladeHubs[i].position.set(r*Math.cos(theta+phi),
+                                    r*Math.sin(theta+phi), 6);
+        scene.add(smBladeHubs[i]);
+        
+        x = -55;
+        y = -130;
         r = Math.sqrt(x*x + y*y);
         theta = Math.atan2(y, x);
         smNacelles[i] = makeSmallNacelle();
-        smNacelles[i].rotation.z = phi-Math.PI/2;
+        smNacelles[i].rotation.z = phi+Math.PI/2;
         smNacelles[i].position.set(r*Math.cos(theta+phi),
-                                   r*Math.sin(theta+phi), 10);
+                                   r*Math.sin(theta+phi), 3);
         
         scene.add(smNacelles[i]);
     }
@@ -267,47 +271,6 @@ function lowerLargeTurbineMast(index) {
     }
 }
 
-var smbOpenedAngles = [ 0, -2*Math.PI/3, 2*Math.PI/3 ];
-var smbClosedAngles = [ 0, 3*Math.PI/180, -3*Math.PI/180 ];
-
-function makeSmallBladeHub(i, x0, y0, z0) {
-    var smHubGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.0, 6);
-    smHubs[i] = new THREE.Mesh(smHubGeom, woodMat);
-    //smHubs[i].rotation.x = Math.PI/2;
-    smHubs[i].position.set(x0, y0, z0);
-    scene.add(smHubs[i]);
-    smBlades[i] = [];
-    
-    var smbMountGeom = new THREE.CylinderGeometry(0.5, 0.5, 3);
-    var smBladeGeom = new THREE.CylinderGeometry(0.5, 0.5, 20);
-    for (var j=0; j<3; ++j) {
-        //var offset = new THREE.Vector3(x0 + 2.125*Math.cos(j*2*Math.PI/3),
-        //                               y0 + 2.125*Math.sin(j*2*Math.PI/3),
-        //                               z0 + 2.5);
-        var x = 2.125*Math.cos(j*2*Math.PI/3);
-        var y = 2.5;
-        var z = 2.125*Math.sin(j*2*Math.PI/3);
-        var smbMount = new THREE.Mesh(smbMountGeom, pvcMat);
-        smbMount.position.set(x, y, z);
-        
-        var smBlade = new THREE.Mesh(smBladeGeom, pvcMat);
-        smBlade.rotation.z = Math.PI/2;
-        smBlade.rotation.x = Math.PI/2 + smbClosedAngles[j];
-        smBlade.position.set(0, 10, 1.5);
-        smbMount.add(smBlade);
-
-        smBlades[i][j] = smBlade;
-        smHubs[i].add(smbMount);
-
-        //var constraint = new Physijs.DOFConstraint( smBlades[i][j], smHubs[i],
-        //                                            {x:x0+x, y:y0+y, z:z0+z} );
-        //constraint.setAngularLowerLimit({x: 0, y: smbClosedAngles[i], z: 0});
-        //constraint.setAngularUpperLimit({x: 0, y: smbOpenedAngles[i], z: 0});
-        //scene.addConstraint(constraint);
-    }
-
-}
-
 function makeSmallNacelle() {
     var lgPvcGeom = new THREE.CylinderGeometry(.5, .5, 18, 16, 1, true);
     var smNacelle = new THREE.Mesh(lgPvcGeom, pvcMatDS);
@@ -366,6 +329,58 @@ function makeSmallNacelle() {
     }
 
     return smNacelle;
+}
+
+var QuarterCircle = THREE.Curve.create( 
+    function(scale) {
+        this.scale = ( scale===undefined ? 1 : scale );
+    },
+    function(t) {
+        var tx = 1.0-Math.cos(Math.PI*t/2);
+        var ty = Math.sin(Math.PI*t/2);
+        var tz = 0.0;
+        return new THREE.Vector3(tx, ty, tz).multiplyScalar(this.scale);
+    }
+);
+var smbOpenedAngles = [ 0, -2*Math.PI/3, 2*Math.PI/3 ];
+var smbClosedAngles = [ 0, 2.5*Math.PI/180, -2.5*Math.PI/180 ];
+
+function makeSmallBladeHub(i) {
+    var path = new QuarterCircle(2);
+    var smHubGeom = new THREE.CylinderGeometry(3.5, 3.5, 2.0, 6);
+    var smbMountGeom = new THREE.CylinderGeometry(0.75, 0.75, 3, 16);
+    var smbElbowGeom = new THREE.TubeGeometry(path, 10, 0.75, 16, false);
+    var smCapGeom = new THREE.CylinderGeometry(0.75, 0.75, 0.5, 16);
+    var smBladeGeom = new THREE.CylinderGeometry(0.5, 0.5, 20);
+
+    smHub = new THREE.Mesh(smHubGeom, woodMat);
+    smBlades[i] = [];
+    for (var j=0; j<3; ++j) {
+        var x = 2.125*Math.cos(j*2*Math.PI/3);
+        var y = -0.5;
+        var z = 2.125*Math.sin(j*2*Math.PI/3);
+        var smbMount = new THREE.Mesh(smbMountGeom, pvcMat);
+        smbMount.position.set(x, y, z);
+        
+        var smElbow = new THREE.Mesh(smbElbowGeom, pvcMat);
+        smElbow.rotation.y = smbClosedAngles[j];
+        smElbow.position.set(0, 1.5, 0);
+        smbMount.add(smElbow);
+
+        var smCap = new THREE.Mesh(smCapGeom, pvcMat);
+        smCap.rotation.z = Math.PI/2;
+        smCap.position.set(2.25, 2, 0);
+        smElbow.add(smCap);
+
+        var smBlade = new THREE.Mesh(smBladeGeom, pvcMat);
+        smBlade.rotation.z = Math.PI/2;
+        smBlade.position.set(11, 2, 0);
+        smElbow.add(smBlade);
+
+        smBlades[i][j] = smElbow;
+        smHub.add(smbMount);
+    }
+    return smHub;
 }
 
 function openSmallBlades(index) {
