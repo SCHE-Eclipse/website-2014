@@ -128,32 +128,25 @@ function makeBridge(section) {
 
     var plankGeom = new THREE.BoxGeometry(12,36,0.25);
     var uprightGeom = new THREE.BoxGeometry(0.75, 4, 36);
-    var gateGeom = new THREE.BoxGeometry(0.75, 60, 2);
 
-    var center, ramp1, ramp2, up1, up2, bar1, bar2;
+    var center, ramp1, ramp2, up1, up2;
     center = new THREE.Mesh(plankGeom, woodMat);
     ramp1 = new THREE.Mesh(plankGeom, woodMat);
     ramp2 = new THREE.Mesh(plankGeom, woodMat);
     up1 = new THREE.Mesh(uprightGeom, woodMat);
     up2 = new THREE.Mesh(uprightGeom, woodMat);
-    bar1 = new THREE.Mesh(gateGeom, woodMat);
-    bar2 = new THREE.Mesh(gateGeom, woodMat);
  
     center.castShadow = true;
     ramp1.castShadow = true;
     ramp2.castShadow = true;
     up1.castShadow = true;
     up2.castShadow = true;
-    bar1.castShadow = true;
-    bar2.castShadow = true;
 
     center.receiveShadow = true;
     ramp1.receiveShadow = true;
     ramp2.receiveShadow = true;
     up1.receiveShadow = false;
     up2.receiveShadow = false;
-    bar1.receiveShadow = true;
-    bar2.receiveShadow = true;
 
     ramp1.rotation.y = -19*Math.PI/180;
     ramp1.position.set(-11.8, 0, -2);
@@ -165,25 +158,7 @@ function makeBridge(section) {
 
     up1.position.set( 0, -20, 14);
     up2.position.set( 0,  20, 14);
-
-    var gate1 = new THREE.Mesh(new THREE.BoxGeometry(0, 96, 1.5),
-                               new THREE.MeshBasicMaterial({visible: false}));
-    var gate2 = new THREE.Mesh(new THREE.BoxGeometry(0, 96, 1.5),
-                               new THREE.MeshBasicMaterial({visible: false}));
-
-    bar1.position.y =  18;
-    bar2.position.y = -18;
-
-    gate1.add(bar1);
-    gate1.rotation.x = -28*Math.PI/180;
-    gate1.position.set(  1, 0, 15);
-    up1.add(gate1);
     center.add(up1);
-
-    gate2.add(bar2);
-    gate2.rotation.x =  28*Math.PI/180;
-    gate2.position.set( -1, 0, 15);
-    up2.add(gate2);
     center.add(up2);
 
     var phi = section * Math.PI/2;
