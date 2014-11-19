@@ -405,3 +405,16 @@ function closeSmallBlades(index) {
         smHubTweens[i].start();
     }
 }
+function makeLargeBlades () {
+    var largeBlades = new THREE.Object3D();
+    var pvcMat = new THREE.MeshLambertMaterial({color:0x888888});
+    var noodleMat = new THREE.MeshLambertMaterial({color:0x000000});
+    var lbShortMat = new THREE.CylinderGeometry(0.5, 0.5, 8, 16, 1, true);
+    var lbLongMat = new THREE.CylinderGeometry(0.75, 0.75, 32, 16, 1, true);
+    var lbShort = new THREE.Mesh(lbShortMat, pvcMat);
+    var lbLong = new THREE.Mesh(lbLongMat, noodleMat);
+    lbLong.position.x = 5;
+    largeBlades.add(lbShort);
+    largeBlades.add(lbLong);
+    return largeBlades;
+}
