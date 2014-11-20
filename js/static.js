@@ -4,8 +4,6 @@ function initStaticBodies() {
     for (var i=0; i<4; ++i) {
         makeBridge(i);
         makeOSOW(i);
-        makeSmallTurbineBase(i);
-        makeLargeTurbineBase(i);
     }
 }
 
@@ -219,46 +217,5 @@ function makeOSOW (section) {
     backPlane.rotation.z = -phi;
     backPlane.position.set( 116.5*Math.sin(phi), 116.5*Math.cos(phi), 20);
     scene.add(backPlane);
-}
-
-function makeSmallTurbineBase (section) {
-    var phi = section * Math.PI/2;
-    var baseGeom = new THREE.BoxGeometry(18, 24, 0.75);
-    var slabGeom = new THREE.BoxGeometry(16, 16, 1);
-    var baseMesh, slabMesh;
-    baseMesh = new THREE.Mesh(baseGeom, woodMat);
-    slabMesh = new THREE.Mesh(slabGeom, stoneMat);
-
-    slabMesh.position.set(0, 8, 0.875);
-    baseMesh.add(slabMesh);
-
-    var x = 26, y = -106, z = 0.375;
-    var r = Math.sqrt(x*x + y*y);
-    var theta = Math.atan2(y, x);
-    baseMesh.rotation.z = phi;
-    baseMesh.position.set(r*Math.cos(theta+phi),
-                          r*Math.sin(theta+phi), z);
-
-    scene.add(baseMesh);
-}
-
-function makeLargeTurbineBase (section) {
-    var phi = section * Math.PI/2;
-    var baseGeom = new THREE.BoxGeometry(18, 24, 0.75);
-    var slabGeom = new THREE.BoxGeometry(16, 16, 1);
-    var baseMesh, slabMesh;
-    baseMesh = new THREE.Mesh(baseGeom, woodMat);
-    slabMesh = new THREE.Mesh(slabGeom, stoneMat);
-    slabMesh.position.set(0, 8, 0.875);
-    baseMesh.add(slabMesh);
-
-    var x = 95, y = -110, z = 0.375;
-    var r = Math.sqrt(x*x + y*y);
-    var theta = Math.atan2(y, x);
-    baseMesh.rotation.z = phi+Math.PI/4;
-    baseMesh.position.set(r*Math.cos(theta+phi),
-                          r*Math.sin(theta+phi), z);
-
-    scene.add(baseMesh);
 }
 

@@ -26,10 +26,11 @@ var smbClosedAngles = [ 0, 2.5*Math.PI/180, -2.5*Math.PI/180 ];
 var smBladeHubs = [];
 var smBlades = [];
 var smNacelles = [];
-var smMastLock = true;
-var lgMastLock = true;
-var smBladesLock = true;
-var gateLock = true;
+var smMastLock = [ false, false, false, false ];
+var lgMastLock = [ false, false, false, false ];
+var smBladesLock = [ false, false, false, false ];
+var gateLock = [ false, false, false, false ];
+var cameraLock = false;
 var robot = {};
 var grippedItem = null;
 
@@ -274,14 +275,46 @@ function initScene() {
 }
 
 function resetCamera() {
-    var phi = activeSection*Math.PI/2;
-    var x0 = -50;
-    var y0 = -220;
-    var r0 = Math.sqrt(x0*x0 + y0*y0);
-    var theta = Math.atan2(y0, x0);
-		camera.position.set( r0*Math.cos(theta + phi),
-                         r0*Math.sin(theta + phi), 200 );
-    camera.lookAt(scene.position);
+    // If the camera is currently being moved then discard request
+    if (cameraLock) return;
+    // Indicate that we are now moving the camera
+    cameraLock = true;
+
+    var pos = camera.position;
+    var r0 = Math.sqrt(pos.x*pos.x + pos.y*pos.y);
+    var theta0 = Math.atan2(pos.y, pos.x);
+    var phi0 = Math.atan2(pos.z, r0);
+
+    var x1 = -50;
+    var y1 = -220;
+    var z1 = 200;
+    var tgt = new THREE.Vector3(x1, y1, z1);
+    var r1 = Math.sqrt(x1*x1 + y1*y1);
+    var theta1 = activeSection*Math.PI/2 + Math.atan2(y1, x1);
+    if (theta1 - theta0 > Math.PI) {
+        theta1 -= 2*Math.PI;
+    }
+    else if (theta1 - theta0 < -Math.PI) {
+        theta1 += 2*Math.PI;
+    }
+    var phi1 = Math.atan2(z1, r1);
+    var tween = new TWEEN.Tween( { r: pos.length(),
+                                   theta: theta0,
+                                   phi: phi0 } )
+        .to( { r: tgt.length(),
+               theta: theta1,
+               phi: phi1 }, 1000 )
+        .onUpdate( function() {
+            var x = this.r*Math.cos(this.theta)*Math.cos(this.phi);
+            var y = this.r*Math.sin(this.theta)*Math.cos(this.phi);
+            var z = this.r*Math.sin(this.phi);
+            camera.position.set(x, y, z);
+            camera.lookAt(scene.position);
+        } )
+        .onComplete( function() {
+            cameraLock = false;
+        } )
+        .start();
 }
 
 function initControls() {
@@ -322,24 +355,29 @@ function initControls() {
 						break;
 */
         case 's':
-            if (smMastLock) {
-                toggleSmallMast(activeSection);
-            }
+            toggleSmallMast(activeSection);
             break;
         case 'l':
-            if (lgMastLock) {
-                toggleLargeMast(activeSection);
-            }
+            toggleLargeMast(activeSection);
             break;
         case 'g':
-            if (gateLock) {
-                toggleGates(activeSection);
-            }
+            toggleGates(activeSection);
             break;
         case 'b':
-            if (smBladesLock) {
-                toggleSmallBlades(activeSection);
-            }
+            toggleSmallBlades(activeSection);
+            break;
+        case '0':
+        case '4':
+            activeSection = 0; resetCamera();
+            break;
+        case '1':
+            activeSection = 1; resetCamera();
+            break;
+        case '2':
+            activeSection = 2; resetCamera();
+            break;
+        case '3':
+            activeSection = 3; resetCamera();
             break;
 				}
 		} );
@@ -490,24 +528,16 @@ function updateJoystick() {
     }
 */
     if (X) {
-        if (smMastLock) {
-            toggleSmallMast(activeSection);
-        }
+        toggleSmallMast(activeSection);
     }
     if (Y) {
-        if (lgMastLock) {
-            toggleLargeMast(activeSection);
-        }
+        toggleLargeMast(activeSection);
     }
     if (B) {
-        if (smBladesLock) {
-            toggleSmallBlades(activeSection);
-        }
+        toggleSmallBlades(activeSection);
     }
     if (A) {
-        if (gateLock) {
-            toggleGates(activeSection);
-        }
+        toggleGates(activeSection);
     }
 /*
     if (DN) {
@@ -527,12 +557,6 @@ function updateJoystick() {
         controls.rotateUp(LY*Math.PI/180);
     }
     controls.update();
-*/
-/*
-    if (A) { activeSection = 1; resetCamera(); }
-    if (B) { activeSection = 2; resetCamera(); }
-    if (X) { activeSection = 3; resetCamera(); }
-    if (Y) { activeSection = 0; resetCamera(); }
 */
 }
 

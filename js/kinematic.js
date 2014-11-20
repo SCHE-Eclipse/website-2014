@@ -2,35 +2,56 @@ function initKinematicBodies() {
     for (var i=0; i<4; ++i) {
         var phi = i*Math.PI/2;
 
-        x = 26;
-        y = -108.5;
-        r = Math.sqrt(x*x + y*y);
-        theta = Math.atan2(y, x);
+        //------------------------------------------------------------
+        // Create the small turbine mast
         smMasts[i] = makeTurbineMast();
-        smMasts[i].rotation.z = phi;
-        smMasts[i].position.set(r*Math.cos(theta+phi),
-                                r*Math.sin(theta+phi), 0.375);
-        smMasts[i].userData.lowered = false;
+        // Position the mast with respect to its base
+        smMasts[i].position.set(0, -2.5, 0);
+        // Indicate that the mast is currently raised
         smMasts[i].userData.raised = true;
-        scene.add(smMasts[i]);
-
-        x = 97.77;
-        y = -111.77;
+        // Create the small turbine base
+        var smBase = makeTurbineBase();
+        // Add the mast to the base
+        smBase.add(smMasts[i]);
+        // Position the base on the play field in section i
+        x = 26, y = -106, z = 0.375; // coordinates with respect to section 0
         r = Math.sqrt(x*x + y*y);
         theta = Math.atan2(y, x);
-        lgMasts[i] = makeTurbineMast();
-        lgMasts[i].rotation.z = phi;
-        lgMasts[i].rotateOnAxis(new THREE.Vector3(0,0,1), Math.PI/4);
-        lgMasts[i].position.set(r*Math.cos(theta+phi),
-                                r*Math.sin(theta+phi), 0);
-        lgMasts[i].userData.raised = false;
-        // Add large turbine nacelle to it's mast
+        smBase.rotation.z = phi;
+        smBase.position.set(r*Math.cos(theta+phi),
+                            r*Math.sin(theta+phi), z);
+        // Add the base to the scene
+        scene.add(smBase);
+
+        //------------------------------------------------------------
+        // Create the large turbine nacelle
         var lgNacelle = makeLargeTurbineNacelle();
+        // Position the nacelle with respect to its mast
         lgNacelle.rotation.z = -Math.PI/2;
         lgNacelle.position.set(-8, -6.5, 34.5);
+        // Create the large turbine mast
+        lgMasts[i] = makeTurbineMast();
+        // Add the nacelle to the mast
         lgMasts[i].add(lgNacelle);
-        scene.add(lgMasts[i]);
+        // Position the mast with respect to its base
+        lgMasts[i].position.set(0, -2.5, 0);
+        // Indicate that the mast is currently raised
+        lgMasts[i].userData.raised = true;
+        // Create the large turbine base
+        var lgBase = makeTurbineBase();
+        // Add the mast to the base
+        lgBase.add(lgMasts[i]);
+        // Position the base on the play field in sectino i
+        x = 95, y = -110, z = 0.375; // Coordinates with respect to section 0
+        r = Math.sqrt(x*x + y*y);
+        theta = Math.atan2(y, x);
+        lgBase.rotation.z = phi + Math.PI/4;
+        lgBase.position.set(r*Math.cos(theta+phi),
+                            r*Math.sin(theta+phi), z);
+        // Add the base to the scene
+        scene.add(lgBase);
 
+        //------------------------------------------------------------
         gates[i] = buildGates(i);
         x0 = 1;
         y0 = -96;
@@ -56,44 +77,56 @@ function initKinematicBodies() {
     }
 }
 
+function makeTurbineBase () {
+    var baseGeom = new THREE.BoxGeometry(18, 24, 0.75);
+    var slabGeom = new THREE.BoxGeometry(16, 16, 1);
+    var baseMesh, slabMesh;
+    baseMesh = new THREE.Mesh(baseGeom, woodMat);
+    slabMesh = new THREE.Mesh(slabGeom, stoneMat);
+    slabMesh.position.set(0, 8, 0.875);
+    baseMesh.add(slabMesh);
+
+    return baseMesh;
+}
+
 function makeTurbineMast() {
     var mast = new THREE.Object3D();
 
-    var LTBmastbackgeo = new THREE.BoxGeometry(4, 0.75, 36);
-    var LTBmastback = new THREE.Mesh(LTBmastbackgeo, woodMat);
-    LTBmastback.castShadow = true;
-    LTBmastback.receiveShadow = true;
-    LTBmastback.position.set(0, -9.875, 18);
-    mast.add(LTBmastback);
+    var mastbackGeom = new THREE.BoxGeometry(4, 0.75, 36);
+    var mastback = new THREE.Mesh(mastbackGeom, woodMat);
+    mastback.castShadow = true;
+    mastback.receiveShadow = true;
+    mastback.position.set(0, -9.875, 18);
+    mast.add(mastback);
 
-    var LTBmastbottomgeo = new THREE.BoxGeometry(15, 8, 0.75);
-    var LTBmastbottom = new THREE.Mesh(LTBmastbottomgeo, woodMat);
-    LTBmastbottom.castShadow = true;
-    LTBmastbottom.receiveShadow = true;
-    LTBmastbottom.position.set(0, -4, 1.125);
-    mast.add(LTBmastbottom);
+    var mastbottomGeom = new THREE.BoxGeometry(15, 8, 0.75);
+    var mastbottom = new THREE.Mesh(mastbottomGeom, woodMat);
+    mastbottom.castShadow = true;
+    mastbottom.receiveShadow = true;
+    mastbottom.position.set(0, -4, 1.125);
+    mast.add(mastbottom);
 
-    var LTBmastgeo = new THREE.CylinderGeometry(2, 2, 36, 16, 1, true);
-    var LTBmast = new THREE.Mesh(LTBmastgeo, pvcMatDS);
-    LTBmast.castShadow = true;
-    LTBmast.receiveShadow = true;
-    LTBmast.rotation.x = Math.PI/2;
-    LTBmast.position.set(0, -4, 19.5);
-    mast.add(LTBmast);
+    var postGeom = new THREE.CylinderGeometry(2, 2, 36, 16, 1, true);
+    var post = new THREE.Mesh(postGeom, pvcMatDS);
+    post.castShadow = true;
+    post.receiveShadow = true;
+    post.rotation.x = Math.PI/2;
+    post.position.set(0, -4, 19.5);
+    mast.add(post);
 
     return mast;
 }
 
 function makeLargeTurbineNacelle() {
     var nacelle = new THREE.Object3D();
-    var LTBmedPVCgeo = new THREE.CylinderGeometry(1, 1, 10, 16, 1, true);
-    var LTBsmlPVCgeo = new THREE.CylinderGeometry(0.5, 0.5, 10, 16, 1, true);
+    var LTBmedPVCGeom = new THREE.CylinderGeometry(1, 1, 10, 16, 1, true);
+    var LTBsmlPVCGeom = new THREE.CylinderGeometry(0.5, 0.5, 10, 16, 1, true);
     var radius  = Math.sqrt(1.25) + Math.sqrt(3);
     for (var l = 0; l < 6; l++) {
 	      var theta = l * Math.PI / 3 + Math.PI / 6;
 	      var x = Math.sin(theta) * radius;
 	      var z = 6 + Math.cos(theta) * radius;
-	      var mesh2 = new THREE.Mesh(LTBsmlPVCgeo, pvcMatDS);
+	      var mesh2 = new THREE.Mesh(LTBsmlPVCGeom, pvcMatDS);
 	      mesh2.castShadow = true;
 	      mesh2.receiveShadow = true;
 	      mesh2.position.set(x, 8, z);
@@ -104,31 +137,31 @@ function makeLargeTurbineNacelle() {
 	      var theta = j * Math.PI / 3;
 	      var x = Math.sin(theta) * r;
 	      var z = 6 + Math.cos(theta) * r;
-	      var mesh = new THREE.Mesh(LTBmedPVCgeo, pvcMatDS);
+	      var mesh = new THREE.Mesh(LTBmedPVCGeom, pvcMatDS);
 	      mesh.castShadow = true;
 	      mesh.receiveShadow = true;
 	      mesh.position.set(x, 8, z);
 	      nacelle.add(mesh);
     }
 
-    var LTBlgPVCgeo = new THREE.CylinderGeometry(1, 1, 17, 16, 1, false);
-    var LTBlgPVC = new THREE.Mesh(LTBlgPVCgeo, pvcMat);
+    var LTBlgPVCGeom = new THREE.CylinderGeometry(1, 1, 17, 16, 1, false);
+    var LTBlgPVC = new THREE.Mesh(LTBlgPVCGeom, pvcMat);
     LTBlgPVC.castShadow = true;
     LTBlgPVC.receiveShadow = true;
     LTBlgPVC.position.z = 6;
     LTBlgPVC.position.y = 6;
     nacelle.add( LTBlgPVC );
 
-    var LTBcollargeo = new THREE.CylinderGeometry(1.5, 1.5, 2, 16, 1, false);
-    var LTBcollar = new THREE.Mesh(LTBcollargeo, pvcMat);
+    var LTBcollarGeom = new THREE.CylinderGeometry(1.5, 1.5, 2, 16, 1, false);
+    var LTBcollar = new THREE.Mesh(LTBcollarGeom, pvcMat);
     LTBcollar.castShadow = true;
     LTBcollar.receiveShadow = true;
     LTBcollar.position.z = 6;
     LTBcollar.position.y = 2;
     nacelle.add( LTBcollar );
 
-    var LTBbladehubgeo = new THREE.CylinderGeometry(7, 7, 2, 6, 1, false);
-    var LTBbladehub =  new THREE.Mesh(LTBbladehubgeo, woodMat);
+    var LTBbladehubGeom = new THREE.CylinderGeometry(7, 7, 2, 6, 1, false);
+    var LTBbladehub =  new THREE.Mesh(LTBbladehubGeom, woodMat);
     LTBbladehub.castShadow = true;
     LTBbladehub.receiveShadow = true;
     //LTBbladehub.rotation.y = Math.PI/6;
@@ -136,8 +169,8 @@ function makeLargeTurbineNacelle() {
     LTBbladehub.position.y = 0;
     nacelle.add( LTBbladehub );
 
-    var LTBbottomgeo = new THREE.BoxGeometry(6, 10, 0.25);
-    var LTBbottom = new THREE.Mesh(LTBbottomgeo, woodMat);
+    var LTBbottomGeom = new THREE.BoxGeometry(6, 10, 0.25);
+    var LTBbottom = new THREE.Mesh(LTBbottomGeom, woodMat);
     LTBbottom.castShadow = true;
     LTBbottom.receiveShadow = true;
     LTBbottom.position.z = 3;
@@ -178,32 +211,42 @@ function buildGates(section) {
 }
 
 //====================================================================
-// Control the appearance of kinematic object through explicit
+// Control the appearance of kinematic objects through explicit
 // manipulation of their positions and orientations.
 //====================================================================
 
 //--------------------------------------------------------------------
 // Raise/Lower the small turbine mast in the given section
 //--------------------------------------------------------------------
-var smRaisedAngles = { x: 0, y: 0, z: Math.PI/2 };
-var smLoweredAngles = { x: 0, y: -Math.PI/2, z: Math.PI/2 };
-
 function toggleSmallMast(section) {
-    smMastLock = false;
     // If no section is provided, use the currently active section
     var s = ( section === undefined ? activeSection : section );
+    // If the mast is currently being raised or lowered then discard request
+    if (smMastLock[s]) return;
+    // Indicate that we are now raising or lowering the mast
+    smMastLock[s] = true;
+
     var tween = new TWEEN.Tween( smMasts[s].rotation );
     var target = {
-        x: ( smMasts[s].rotation.x == smRaisedAngles.x ?
-             smLoweredAngles.x : smRaisedAngles.x ),
-        y: ( smMasts[s].rotation.y == smRaisedAngles.y ?
-             smLoweredAngles.y : smRaisedAngles.y ),
-        z: ( smMasts[s].rotation.z == smRaisedAngles.z ?
-             smLoweredAngles.z : smRaisedAngles.z )
+        x: ( smMasts[s].userData.raised ? -Math.PI/2 : 0 ),
     };
     tween.to( target, 1000 );
+    tween.onUpdate( function() {
+        smMasts[s].userData.raised = ( smMasts[s].rotation.x == 0 );
+    } );
     tween.onComplete( function() {
-        smMastLock = true;
+        // Indicate that the operation has completed
+        smMastLock[s] = false;
+        console.log("STB masts raised: " +
+                    smMasts[0].userData.raised + " " +
+                    smMasts[1].userData.raised + " " +
+                    smMasts[2].userData.raised + " " +
+                    smMasts[3].userData.raised );
+        console.log("STB masts locked: " +
+                    smMastLock[0] + " " +
+                    smMastLock[1] + " " +
+                    smMastLock[2] + " " +
+                    smMastLock[3] );
     } );
     tween.start();
 }
@@ -211,25 +254,35 @@ function toggleSmallMast(section) {
 //--------------------------------------------------------------------
 // Raise/Lower the large turbine mast in the given section
 //--------------------------------------------------------------------
-var lgRaisedAngles = { x: 0, y: 0, z: 3*Math.PI/4 };
-var lgLoweredAngles = { x: Math.PI/2, y: -Math.PI/4, z: Math.PI };
-
 function toggleLargeMast(section) {
-    lgMastLock = false;
     // If no section is provided, use the currently active section
     var s = ( section === undefined ? activeSection : section );
+    // If the mast is currently being raised or lowered then discard request
+    if (lgMastLock[s]) return;
+    // Indicate that we are now raising or lowering the mast
+    lgMastLock[s] = true;
+
     var tween = new TWEEN.Tween( lgMasts[s].rotation );
     var target = {
-        x: ( lgMasts[s].rotation.x == lgRaisedAngles.x ?
-             lgLoweredAngles.x : lgRaisedAngles.x ),
-        y: ( lgMasts[s].rotation.y == lgRaisedAngles.y ?
-             lgLoweredAngles.y : lgRaisedAngles.y ),
-        z: ( lgMasts[s].rotation.z == lgRaisedAngles.z ?
-             lgLoweredAngles.z : lgRaisedAngles.z )
+        x: ( lgMasts[s].userData.raised ? -Math.PI/2 : 0 ),
     };
     tween.to( target, 1000 );
+    tween.onUpdate( function() {
+        lgMasts[s].userData.raised = ( lgMasts[s].rotation.x == 0 );
+    } );
     tween.onComplete( function() {
-        lgMastLock = true;
+        // Indicate that the operation has completed
+        lgMastLock[s] = false;
+        console.log("LTB masts raised: " +
+                    lgMasts[0].userData.raised + " " +
+                    lgMasts[1].userData.raised + " " +
+                    lgMasts[2].userData.raised + " " +
+                    lgMasts[3].userData.raised );
+        console.log("LTB masts locked: " +
+                    lgMastLock[0] + " " +
+                    lgMastLock[1] + " " +
+                    lgMastLock[2] + " " +
+                    lgMastLock[3] );
     } );
     tween.start();
 }
@@ -238,21 +291,31 @@ function toggleLargeMast(section) {
 // Open/Close the blades on the small turbine hub in the given section.
 //--------------------------------------------------------------------
 function toggleSmallBlades(section) {
-    smBladesLock = false;
     // If no section is provided, use the currently active section
     var s = ( section === undefined ? activeSection : section );
-    for (var i=1; i<3; ++i) {
-        var tween = new TWEEN.Tween( smBlades[s][i].rotation );
-        var target = {
-            y: ( smBlades[s][i].rotation.y == smbOpenedAngles[i] ?
-                 smbClosedAngles[i] : smbOpenedAngles[i] )
-        };
-        tween.to( target, 1000 );
-        tween.onComplete( function() {
-            smBladesLock = true;
-        } );
-        tween.start();
-    }
+    // If the blades are currently being opened/closed then discard request
+    if (smBladesLock[s]) return;
+    //Indicate that we are now raising or lowering the gates
+    smBladesLock[s] = false;
+    // blade 0 does not move, so we only need to change blades 1 and 2
+    var tween = new TWEEN.Tween( { y1: smBlades[s][1].rotation.y,
+                                   y2: smBlades[s][2].rotation.y } );
+    var target = {
+        y1: ( smBlades[s][1].rotation.y == smbOpenedAngles[1] ?
+              smbClosedAngles[1] : smbOpenedAngles[1] ),
+        y2: ( smBlades[s][2].rotation.y == smbOpenedAngles[2] ?
+              smbClosedAngles[2] : smbOpenedAngles[2] )
+    };
+    tween.to( target, 1000 );
+    tween.onUpdate( function() {
+        smBlades[s][1].rotation.y = this.y1;
+        smBlades[s][2].rotation.y = this.y2;
+    } );
+    tween.onComplete( function() {
+        // Indicate that the operation has completed
+        smBladesLock[s] = false;
+    } );
+    tween.start();
 }
 
 //--------------------------------------------------------------------
@@ -262,10 +325,11 @@ var gateRaisedAngles = [  28*Math.PI/180, -28*Math.PI/180 ];
 var gateLoweredAngles = [ -28*Math.PI/180, 28*Math.PI/180 ];
 
 function toggleGates(section) {
-    gateLock = false;
-    var phi = section * Math.PI/2;
     // If no section is provided, use the currently active section
     var s = ( section === undefined ? activeSection : section );
+    if (gateLock[s]) return;
+    gateLock[s] = true;
+    var phi = section * Math.PI/2;
     for (var i=0; i<2; ++i) {
         var tween = new TWEEN.Tween( gates[s][i].rotation );
         var target = {
@@ -278,7 +342,7 @@ function toggleGates(section) {
         };
         tween.to( target, 1000 );
         tween.onComplete( function() {
-            gateLock = true;
+            gateLock[s] = false;
         } );
         tween.start();
     }
