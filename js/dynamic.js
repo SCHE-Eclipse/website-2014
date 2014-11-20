@@ -7,20 +7,24 @@ function initDynamicBodies() {
         initLargeBlades(i);
 
         x = -30;
-        y = -120;
+        y = -130;
         r = Math.sqrt(x*x + y*y);
         theta = Math.atan2(y, x);
-        makeSmallBladeHub(i, r*Math.cos(theta+phi),
-                          r*Math.sin(theta+phi), 2);
-
-        x = -70;
-        y = -125;
+        smBladeHubs[i] = makeSmallBladeHub(i);
+        smBladeHubs[i].rotation.y = -phi;
+        smBladeHubs[i].rotation.x = -Math.PI/2;
+        smBladeHubs[i].position.set(r*Math.cos(theta+phi),
+                                    r*Math.sin(theta+phi), 3.75);
+        scene.add(smBladeHubs[i]);
+        
+        x = -55;
+        y = -130;
         r = Math.sqrt(x*x + y*y);
         theta = Math.atan2(y, x);
         smNacelles[i] = makeSmallNacelle();
-        smNacelles[i].rotation.z = phi-Math.PI/2;
+        smNacelles[i].rotation.z = phi+Math.PI/2;
         smNacelles[i].position.set(r*Math.cos(theta+phi),
-                                   r*Math.sin(theta+phi), 10);
+                                   r*Math.sin(theta+phi), 3);
         
         scene.add(smNacelles[i]);
     }
@@ -228,3 +232,4 @@ function makeSmallBladeHub(section) {
     }
     return smHub;
 }
+
