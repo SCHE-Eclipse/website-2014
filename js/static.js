@@ -25,10 +25,20 @@ function initGround() {
     road.position.set(0, 0, 0.125);
     scene.add(road);
     for (var i=0; i<4; ++i) {
-        var theta = i*Math.PI/2;
+        var phi = i*Math.PI/2;
         road = makeBadRoad(i);
-        road.position.set( 36*Math.sin(theta), 36*Math.cos(theta), 0.125);
+        road.position.set( 36*Math.sin(phi), 36*Math.cos(phi), 0.125);
         scene.add(road);
+
+        var cactus = makeCactus();
+        var x = -18, y=-18;
+        var r = Math.sqrt(x*x + y*y);
+        var theta = Math.atan2(y, x);
+        cactus.position.set( r*Math.cos(phi+theta),
+                             r*Math.sin(phi+theta),
+                             18 );
+        cactus.rotation.z = phi + theta + Math.PI;
+        scene.add(cactus);
     }
 }
 
@@ -117,7 +127,7 @@ function makeBadRoad(section) {
             roadMesh.add(bump);
         }
     }
-return roadMesh;
+    return roadMesh;
 }
 
 // Create the ramp/bridge geometry
@@ -219,3 +229,29 @@ function makeOSOW (section) {
     scene.add(backPlane);
 }
 
+function makeCactus() {
+    var c1Rgeom = new THREE.BoxGeometry(2,1,36);
+    var c1Rmat = new THREE.MeshLambertMaterial( { color: 0x990000 } );
+    var c1Rmesh = new THREE.Mesh(c1Rgeom, c1Rmat);
+    c1Rmesh.position.z = 10;
+    c1Rmesh.position.x = -10;
+    c1Rmesh.position.y = -1;
+    c1Rmesh.rotation.y = -Math.PI/5;
+
+    var c1Lgeom = new THREE.BoxGeometry(2,1,24);
+    var c1Lmat = new THREE.MeshLambertMaterial( { color: 0x000077 } );
+    var c1Lmesh = new THREE.Mesh(c1Lgeom, c1Lmat);
+    c1Lmesh.position.z = 9;
+    c1Lmesh.position.x = 6;
+    c1Lmesh.position.y = 1;
+    c1Lmesh.rotation.y = Math.PI/5;
+
+    var c1Bgeom = new THREE.BoxGeometry(4,1,36);
+    var c1Bmat = new THREE.MeshLambertMaterial( { color: 0xAA8800 } );
+    var c1Bmesh = new THREE.Mesh(c1Bgeom, c1Bmat);
+
+    c1Bmesh.add(c1Rmesh);
+    c1Bmesh.add(c1Lmesh);
+
+    return c1Bmesh;
+}
