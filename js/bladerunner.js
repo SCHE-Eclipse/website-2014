@@ -218,12 +218,12 @@ function initGUI() {
 		container.appendChild( physics_stats.domElement );
 */
     // The main viewport where the scene will be rendered.
-	    if (webglAvailable()) {
-		renderer = new THREE.WebGLRenderer();
-	    } else {
-		console.log("WebGL not detected. Switching to Canvas...");
-		renderer = new THREE.CanvasRenderer();
-	    }
+    if (webglAvailable()) {
+	renderer = new THREE.WebGLRenderer();
+    } else {
+	console.log("WebGL not detected. Switching to Canvas...");
+	renderer = new THREE.CanvasRenderer();
+    }
     renderer.setClearColor( backgroundColor, 1 );
     renderer.setSize(WIDTH, HEIGHT);
     renderer.shadowMapEnabled = true;
