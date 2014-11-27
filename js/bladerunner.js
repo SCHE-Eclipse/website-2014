@@ -176,11 +176,9 @@ function computeScore() {
 }
 
 function initBladeRunner() {
-  //  if (!Detector.webgl) { Detector.addGetWebGLMessage(); }
-
     gamePaused = true;
     gameOver = false;
-
+    
     var phi = activeSection*Math.PI/2;
     var x0 = -120;
     var y0 = -122.5;
@@ -220,13 +218,18 @@ function initGUI() {
 		container.appendChild( physics_stats.domElement );
 */
     // The main viewport where the scene will be rendered.
-		renderer = new THREE.WebGLRenderer({ antialias: true });
+    if (webglAvailable()) {
+	renderer = new THREE.WebGLRenderer();
+    } else {
+	console.log("WebGL not detected. Switching to Canvas...");
+	renderer = new THREE.CanvasRenderer();
+    }
     renderer.setClearColor( backgroundColor, 1 );
     renderer.setSize(WIDTH, HEIGHT);
-		renderer.shadowMapEnabled = true;
-		renderer.shadowMapSoft = true;
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapSoft = true;
     container.appendChild(renderer.domElement);
-
+    
 }
 
 // The scene object keeps track of everything to be rendered.
@@ -572,4 +575,15 @@ function render() {
     TWEEN.update();
     renderer.render( scene, camera );
     render_stats.update();
+}
+function webglAvailable() {
+    try {
+        var canvas = document.createElement("canvas");
+        return !!
+            window.WebGLRenderingContext && 
+            (canvas.getContext("webgl") || 
+                canvas.getContext("experimental-webgl"));
+    } catch(e) { 
+        return false;
+    } 
 }
