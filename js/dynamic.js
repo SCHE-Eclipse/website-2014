@@ -40,13 +40,13 @@ function initChickens(section) {
         var x=-20, y=j*34-108, z = 3.5;
         var r = Math.sqrt(x*x + y*y);
         var theta = Math.atan2(y, x);
-        var lower = new THREE.Mesh(lowerGeom, pvcMat);
+        var lower = new Physijs.CylinderMesh(lowerGeom, pvcMat);
         lower.castShadow = true;
         lower.receiveShadow = true;
         lower.rotation.x = Math.PI/2;
         lower.position.set(r*Math.cos(theta+phi), r*Math.sin(theta+phi), z);
 
-        var upper = new THREE.Mesh(upperGeom, pvcMat);
+        var upper = new Physijs.CylinderMesh(upperGeom, pvcMat);
         upper.castShadow = true;
         upper.receiveShadow = true;
         upper.position.set(0, 3.5, 0);
@@ -86,13 +86,13 @@ function makeLargeTurbineBlade() {
     var crossGeom = new THREE.CylinderGeometry(1.25, 1.25, 4.0, 16);
     var stemGeom = new THREE.CylinderGeometry(1.25, 1.25, 4.0, 16);
 
-    var foamMesh = new THREE.Mesh(foamGeom, foamMat);
-    var endMesh1 = new THREE.Mesh(endCapGeom, pvcMat);
-    var endMesh2 = new THREE.Mesh(endCapGeom, pvcMat);
-    var tubeMesh1 = new THREE.Mesh(tubeGeom, pvcMat);
-    var tubeMesh2 = new THREE.Mesh(tubeGeom, pvcMat);
-    var crossMesh = new THREE.Mesh(crossGeom, pvcMat);
-    var stemMesh = new THREE.Mesh(endCapGeom, pvcMat);
+    var foamMesh = new Physijs.CylinderMesh(foamGeom, foamMat);
+    var endMesh1 = new Physijs.CylinderMesh(endCapGeom, pvcMat);
+    var endMesh2 = new Physijs.CylinderMesh(endCapGeom, pvcMat);
+    var tubeMesh1 = new Physijs.CylinderMesh(tubeGeom, pvcMat);
+    var tubeMesh2 = new Physijs.CylinderMesh(tubeGeom, pvcMat);
+    var crossMesh = new Physijs.CylinderMesh(crossGeom, pvcMat);
+    var stemMesh = new Physijs.CylinderMesh(endCapGeom, pvcMat);
 
     crossMesh.rotation.z = Math.PI/2;
     blade.add(crossMesh);
@@ -124,7 +124,7 @@ function makeLargeTurbineBlade() {
 
 function makeSmallNacelle() {
     var lgPvcGeom = new THREE.CylinderGeometry(.5, .5, 18, 16, 1, true);
-    var smNacelle = new THREE.Mesh(lgPvcGeom, pvcMatDS);
+    var smNacelle = new Physijs.CylinderMesh(lgPvcGeom, pvcMatDS);
 
     var smPvcGeom = new THREE.CylinderGeometry(.5, .5, 12, 16, 1, true);
     // inner ring
@@ -133,7 +133,7 @@ function makeSmallNacelle() {
 	      var theta = l * Math.PI / 3 + Math.PI / 6;
 	      var x = r * Math.sin(theta);
 	      var z = r * Math.cos(theta);
-	      var mesh = new THREE.Mesh(smPvcGeom, pvcMatDS);
+	      var mesh = new Physjis.CylinderMesh(smPvcGeom, pvcMatDS);
 	      mesh.castShadow = true;
 	      mesh.receiveShadow = false;
 	      mesh.position.set(x, -2, z);
@@ -145,7 +145,7 @@ function makeSmallNacelle() {
 	      var theta = j * Math.PI / 3;
 	      var x = r * Math.sin(theta);
 	      var z = r * Math.cos(theta);
-	      var mesh = new THREE.Mesh(smPvcGeom, pvcMatDS);
+	      var mesh = new Physijs.CylinderMesh(smPvcGeom, pvcMatDS);
 	      mesh.castShadow = true;
 	      mesh.receiveShadow = false;
 	      mesh.position.set(x, -2, z);
@@ -153,18 +153,18 @@ function makeSmallNacelle() {
     };
     
     var joinGeom = new THREE.CylinderGeometry(0.5, 0.5, 5, 16, 1, true);
-    var join = new THREE.Mesh(joinGeom, pvcMatDS);
+    var join = new Physijs.CylinderMesh(joinGeom, pvcMatDS);
     join.rotation.z = 90*Math.PI/180;
     join.position.set(4.5, 0, -0.5);
     smNacelle.add(join);
 
     var bottomGeom = new THREE.BoxGeometry(4, 12, .25);
-    var bottom = new THREE.Mesh(bottomGeom, woodMat);
+    var bottom = new Physijs.BoxMesh(bottomGeom, woodMat);
     bottom.position.set(0, -2, -1.5);
     smNacelle.add(bottom);
 
     var sideGeom = new THREE.BoxGeometry(-2.25, 12, .25);
-    var side = new THREE.Mesh(sideGeom, woodMat);
+    var side = new Physijs.BoxMesh(sideGeom, woodMat);
     side.rotation.y = 90*Math.PI/180;
     side.position.set(2.5, -2, -0.5);
     smNacelle.add(side);
@@ -174,7 +174,7 @@ function makeSmallNacelle() {
     var x = [1.5, -1.5, -1.5, 1.5];
     var y = [2.5, 2.5, -6.5, -6.5];
     for (var n = 0; n < 4; n++) {
-	      var wheel = new THREE.Mesh(wheelGeom, pvcMat);
+	      var wheel = new Physijs.SphereMesh(wheelGeom, pvcMat);
 	      wheel.position.set(x[n], y[n], -2.25);
 	      smNacelle.add(wheel);
     }
@@ -203,26 +203,26 @@ function makeSmallBladeHub(section) {
     var smCapGeom = new THREE.CylinderGeometry(0.75, 0.75, 0.5, 16);
     var smBladeGeom = new THREE.CylinderGeometry(0.5, 0.5, 20);
 
-    smHub = new THREE.Mesh(smHubGeom, woodMat);
+    smHub = new Physijs.CylinderMesh(smHubGeom, woodMat);
     smBlades[s] = [];
     for (var j=0; j<3; ++j) {
         var x = 2.125*Math.cos(j*2*Math.PI/3);
         var y = -0.5;
         var z = 2.125*Math.sin(j*2*Math.PI/3);
-        var smbMount = new THREE.Mesh(smbMountGeom, pvcMat);
+        var smbMount = new Physijs.CylinderMesh(smbMountGeom, pvcMat);
         smbMount.position.set(x, y, z);
         
-        var smElbow = new THREE.Mesh(smbElbowGeom, pvcMat);
+        var smElbow = new Physijs.TubeMesh(smbElbowGeom, pvcMat);
         smElbow.rotation.y = smbClosedAngles[j];
         smElbow.position.set(0, 1.5, 0);
         smbMount.add(smElbow);
 
-        var smCap = new THREE.Mesh(smCapGeom, pvcMat);
+        var smCap = new Physijs.CylinderMesh(smCapGeom, pvcMat);
         smCap.rotation.z = Math.PI/2;
         smCap.position.set(2.25, 2, 0);
         smElbow.add(smCap);
 
-        var smBlade = new THREE.Mesh(smBladeGeom, pvcMat);
+        var smBlade = new Physijs.CylinderMesh(smBladeGeom, pvcMat);
         smBlade.rotation.z = Math.PI/2;
         smBlade.position.set(11, 2, 0);
         smElbow.add(smBlade);
